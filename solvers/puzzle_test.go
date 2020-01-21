@@ -11,6 +11,7 @@ func CheckSolver(t *testing.T, solver SudokuSolver) {
 		"./../puzzles/qwing1.csv",
 		"./../puzzles/qwing2.csv",
 		"./../puzzles/qwing3.csv",
+		"./../puzzles/qwing-expert.csv",
 	}
 
 	for _, puzzleFile := range puzzleFiles {
