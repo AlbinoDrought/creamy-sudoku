@@ -27,17 +27,15 @@ func (b *Board) Print() {
 
 // Valid returns true if the number could be used at the given row/col
 func (b *Board) Valid(row, col int, number byte) bool {
-	// check square
-	sqrt := int(math.Sqrt(float64(b.GridSize)))
-	rowCube := row / sqrt
-	rowCubeStart := rowCube * sqrt
-	colCube := col / sqrt
-	colCubeStart := colCube * sqrt
+	rowCubeStart := (row / b.BoxSize) * b.BoxSize
+	colCubeStart := (col / b.BoxSize) * b.BoxSize
+	cubeRow := 0
+	cubeCol := 0
 
 	// check row/col
 	for i := 0; i < b.GridSize; i++ {
-		cubeRow := rowCubeStart + (i / sqrt)
-		cubeCol := colCubeStart + (i % sqrt)
+		cubeRow = rowCubeStart + (i / b.BoxSize)
+		cubeCol = colCubeStart + (i % b.BoxSize)
 
 		if cubeRow != row && cubeCol != col && b.Numbers[cubeRow][cubeCol] == number {
 			return false
