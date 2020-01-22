@@ -42,7 +42,7 @@ func ImportTSV(path string) (*Board, error) {
 			if err != nil {
 				return nil, err
 			}
-			board.Numbers[row][col] = byte(num)
+			board.Set(row, col, byte(num))
 			board.Sticky[row][col] = true
 		}
 	}

@@ -12,6 +12,11 @@ type Board struct {
 	Sticky   [][]bool
 }
 
+// Set a number on the board
+func (b *Board) Set(row, col int, number byte) {
+	b.Numbers[row][col] = number
+}
+
 // Print the board to standard out
 func (b *Board) Print() {
 	for _, row := range b.Numbers {

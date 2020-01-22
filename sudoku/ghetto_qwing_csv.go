@@ -37,7 +37,7 @@ func ImportString(serialized string) (*Board, error) {
 			return nil, err
 		}
 
-		board.Numbers[row][col] = byte(num)
+		board.Set(row, col, byte(num))
 		board.Sticky[row][col] = true
 	}
 
