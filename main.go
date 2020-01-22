@@ -1,12 +1,15 @@
 package main
 
 import (
+	"sync"
+
 	"github.com/AlbinoDrought/creamy-sudoku/solvers"
 	"github.com/AlbinoDrought/creamy-sudoku/sudoku"
 )
 
 const input = "puzzles/17-blank-tips.tsv"
 const runs = 25
+const parallel = true
 
 func main() {
 	board, err := sudoku.ImportTSV(input)
@@ -15,28 +18,41 @@ func main() {
 	}
 	board.Print()
 
-	solvers := []solvers.SudokuSolver{
+	sudokuSolvers := []solvers.SudokuSolver{
 		&solvers.BruteforceSolver{},
 		&solvers.LoopierBruteforceSolver{},
 	}
 
-	for _, solver := range solvers {
-		benchmark := &benchmarkResult{
-			Target: solver,
-			Runs:   runs,
-		}
+	waitGroup := sync.WaitGroup{}
 
-		for i := 0; i < runs; i++ {
-			board, err := sudoku.ImportTSV(input)
-			if err != nil {
-				panic(err)
+	for _, solver := range sudokuSolvers {
+		waitGroup.Add(1)
+
+		go func(solver solvers.SudokuSolver) {
+			benchmark := &benchmarkResult{
+				Target: solver,
+				Runs:   runs,
 			}
 
-			benchmark.Bench(func() {
-				solver.Solve(board)
-			})
-		}
+			for i := 0; i < runs; i++ {
+				board, err := sudoku.ImportTSV(input)
+				if err != nil {
+					panic(err)
+				}
 
-		benchmark.Print()
+				benchmark.Bench(func() {
+					solver.Solve(board)
+				})
+			}
+
+			benchmark.Print()
+			waitGroup.Done()
+		}(solver)
+
+		if !parallel {
+			waitGroup.Wait()
+		}
 	}
+
+	waitGroup.Wait()
 }
