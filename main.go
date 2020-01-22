@@ -13,6 +13,12 @@ const input = "puzzles/17-blank-tips.tsv"
 const runs = 10
 
 func main() {
+	board, err := sudoku.ImportTSV(input)
+	if err != nil {
+		panic(err)
+	}
+	board.Print()
+
 	solvers := []solvers.SudokuSolver{
 		&solvers.BruteforceSolver{},
 		&solvers.LoopierBruteforceSolver{},
