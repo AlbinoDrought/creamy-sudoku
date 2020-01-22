@@ -23,7 +23,7 @@ func (solver *BruteforceSolver) Solve(board *sudoku.Board) error {
 
 		if board.Numbers[row][col] >= byteGridSize {
 			// we must backtrack
-			board.Numbers[row][col] = 0
+			board.Set(row, col, 0)
 
 			for {
 				i--
@@ -38,7 +38,7 @@ func (solver *BruteforceSolver) Solve(board *sudoku.Board) error {
 		}
 
 		if board.Numbers[row][col] < byteGridSize {
-			board.Numbers[row][col]++
+			board.Set(row, col, board.Numbers[row][col]+1)
 			if board.Valid(row, col, board.Numbers[row][col]) {
 				i++
 			}
