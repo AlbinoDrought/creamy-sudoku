@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"reflect"
+	"sync"
 	"time"
 )
 
@@ -16,6 +17,8 @@ func (result *runResult) Duration() time.Duration {
 }
 
 type benchmarkResult struct {
+	lock sync.Mutex
+
 	Target     interface{}
 	Benchmark  time.Duration
 	Runs       int
@@ -23,6 +26,9 @@ type benchmarkResult struct {
 }
 
 func (result *benchmarkResult) LogRun(run *runResult) {
+	result.lock.Lock()
+	defer result.lock.Unlock()
+
 	result.RunResults = append(result.RunResults, run)
 	result.Runs = len(result.RunResults)
 	result.Benchmark += run.Duration()
