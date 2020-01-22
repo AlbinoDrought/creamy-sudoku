@@ -8,6 +8,7 @@ import (
 // A Board is a sudoku playing field
 type Board struct {
 	GridSize int
+	BoxSize  int
 	Numbers  [][]byte
 	Sticky   [][]bool
 }
@@ -75,9 +76,12 @@ func (b *Board) Solved() bool {
 // MakeBoard initializes a board of the given size and returns it
 func MakeBoard(size int) *Board {
 	board := &Board{
+		// generally 9 for normal puzzles
 		GridSize: size,
-		Numbers:  make([][]byte, size),
-		Sticky:   make([][]bool, size),
+		// generally 3 for normal puzzles
+		BoxSize: int(math.Sqrt(float64(size))),
+		Numbers: make([][]byte, size),
+		Sticky:  make([][]bool, size),
 	}
 
 	for i := 0; i < size; i++ {
