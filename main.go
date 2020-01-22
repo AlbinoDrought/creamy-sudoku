@@ -10,7 +10,7 @@ import (
 )
 
 const input = "puzzles/17-blank-tips.tsv"
-const runs = 10
+const runs = 25
 
 func main() {
 	board, err := sudoku.ImportTSV(input)
