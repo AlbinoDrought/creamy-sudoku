@@ -12,6 +12,47 @@ import (
 const input = "puzzles/17-blank-tips.tsv"
 const runs = 25
 
+type runResult struct {
+	Start time.Time
+	End   time.Time
+}
+
+func (result *runResult) Duration() time.Duration {
+	return result.End.Sub(result.Start)
+}
+
+type benchmarkResult struct {
+	Solver     solvers.SudokuSolver
+	Benchmark  time.Duration
+	Runs       int
+	RunResults []*runResult
+}
+
+func (result *benchmarkResult) LogRun(run *runResult) {
+	result.RunResults = append(result.RunResults, run)
+	result.Runs = len(result.RunResults)
+	result.Benchmark += run.Duration()
+}
+
+func (result *benchmarkResult) Bench(callback func()) *runResult {
+	run := &runResult{
+		Start: time.Now(),
+	}
+	callback()
+	run.End = time.Now()
+	result.LogRun(run)
+	return run
+}
+
+func (result *benchmarkResult) Print() {
+	fmt.Printf(
+		"%v: %vms (%vms/puzzle)\n",
+		reflect.TypeOf(result.Solver).String(),
+		result.Benchmark.Milliseconds(),
+		result.Benchmark.Milliseconds()/int64(result.Runs),
+	)
+}
+
 func main() {
 	board, err := sudoku.ImportTSV(input)
 	if err != nil {
@@ -25,7 +66,10 @@ func main() {
 	}
 
 	for _, solver := range solvers {
-		benchmark := time.Duration(0)
+		benchmark := &benchmarkResult{
+			Solver: solver,
+			Runs:   runs,
+		}
 
 		for i := 0; i < runs; i++ {
 			board, err := sudoku.ImportTSV(input)
@@ -33,14 +77,11 @@ func main() {
 				panic(err)
 			}
 
-			start := time.Now()
-			solver.Solve(board)
-			end := time.Now()
-
-			difference := end.Sub(start)
-			benchmark += difference
+			benchmark.Bench(func() {
+				solver.Solve(board)
+			})
 		}
 
-		fmt.Printf("%v: %vms (%vms/puzzle)\n", reflect.TypeOf(solver).String(), benchmark.Milliseconds(), benchmark.Milliseconds()/runs)
+		benchmark.Print()
 	}
 }
