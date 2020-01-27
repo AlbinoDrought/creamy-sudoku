@@ -46,8 +46,6 @@ func boardToPointer(start *C.int, board *sudoku.Board) {
 
 	return C.int(uintptr(unsafe.Pointer(&nums)))
 	*/
-
-
 	pointer := unsafe.Pointer(start)
 	size := unsafe.Sizeof(C.int(0))
 
